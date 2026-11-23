@@ -1,0 +1,59 @@
+var tombolTab = document.querySelectorAll(".tab button");
+var isiTab = document.querySelectorAll(".isi-tab");
+
+tombolTab.forEach(function (tombol) {
+  tombol.addEventListener("click", function () {
+    tombolTab.forEach(function (t) { t.classList.remove("aktif"); });
+    isiTab.forEach(function (i) { i.classList.remove("aktif"); });
+    tombol.classList.add("aktif");
+    document.getElementById(tombol.dataset.tab).classList.add("aktif");
+  });
+});
+
+var tombolFilter = document.querySelectorAll(".filter button");
+var barisProdi = document.querySelectorAll("tbody tr");
+var infoJumlah = document.getElementById("jumlahProdi");
+
+function filterProdi(fakultas) {
+  var tampil = 0;
+
+  tombolFilter.forEach(function (t) {
+    t.classList.toggle("aktif", t.dataset.filter === fakultas);
+  });
+
+  barisProdi.forEach(function (baris) {
+    if (fakultas === "semua" || baris.dataset.fak === fakultas) {
+      baris.style.display = "";
+      tampil++;
+    } else {
+      baris.style.display = "none";
+    }
+  });
+
+  infoJumlah.textContent = "Menampilkan " + tampil + " program studi.";
+}
+
+tombolFilter.forEach(function (t) {
+  t.addEventListener("click", function () { filterProdi(t.dataset.filter); });
+});
+
+
+document.querySelectorAll(".filter-menu a").forEach(function (a) {
+  a.addEventListener("click", function () { filterProdi(a.dataset.filter); });
+});
+
+filterProdi("semua"); 
+
+var tombolAtas = document.getElementById("keAtas");
+
+window.addEventListener("scroll", function () {
+  tombolAtas.style.display = window.scrollY > 300 ? "block" : "none";
+});
+tombolAtas.addEventListener("click", function () {
+  window.scrollTo({ top: 0, behavior: "smooth" });
+});
+
+
+document.getElementById("tahun").textContent = new Date().getFullYear();
+
+
