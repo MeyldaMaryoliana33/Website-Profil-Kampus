@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Formulir Pendaftaran - Universitas Zelani Indonesia</title>
+  <link rel="stylesheet" href="formulir.css">
+</head>
+<body>
+
+<header>
+  <div class="container">
+    <a href="index.html" class="logo">Universitas Zelani Indonesia</a>
+    <nav>
+      <ul>
+        <li><a href="index.html">Beranda</a></li>
+        <li><a href="index.html#tentang">Tentang Kampus</a></li>
+        <li><a href="index.html#pendidikan">Pendidikan</a></li>
+        <li><a href="index.html#fasilitas">Fasilitas</a></li>
+        <li><a href="index.html#lokasi">Lokasi</a></li>
+      </ul>
+    </nav>
+  </div>
+</header>
+
+<div class="banner">
+  <div class="container">
+    <p><a href="index.html">Beranda</a> / Pendaftaran</p>
+    <h1>Formulir Pendaftaran Mahasiswa Baru</h1>
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="kotak" id="panelForm">
+    <form id="formDaftar" novalidate>
+
+      <h2>Biodata</h2>
+
+      <label for="nama">Nama Lengkap</label>
+      <input type="text" id="nama" name="nama">
+      <span class="error" id="err-nama"></span>
+
+      <label for="tempat">Tempat Lahir</label>
+      <input type="text" id="tempat" name="tempat">
+      <span class="error" id="err-tempat"></span>
+
+      <label for="tanggal">Tanggal Lahir</label>
+      <input type="date" id="tanggal" name="tanggal">
+      <small id="petunjukUsia"></small>
+      <span class="error" id="err-tanggal"></span>
+
+      <label>Jenis Kelamin</label>
+      <div class="radio">
+        <label><input type="radio" name="jk" value="Laki-laki"> Laki-laki</label>
+        <label><input type="radio" name="jk" value="Perempuan"> Perempuan</label>
+      </div>
+      <span class="error" id="err-jk"></span>
+
+      <label for="alamat">Alamat Lengkap</label>
+      <textarea id="alamat" name="alamat" rows="3"></textarea>
+      <span class="error" id="err-alamat"></span>
+
+      <label for="foto">Pas Foto (JPG/PNG, maksimal 2 MB)</label>
+      <div class="filebox">
+        <input type="file" id="foto" name="foto" accept="image/png, image/jpeg" hidden>
+        <label for="foto" class="pilih-file">Choose File</label>
+        <span class="chip" id="chipFile">
+          <span id="belumFile">No file chosen</span>
+          <a id="linkFile" href="#" target="_blank" rel="noopener" title="Klik untuk membuka foto" hidden></a>
+          <button type="button" id="hapusFoto" class="silang" title="Batalkan file" aria-label="Batalkan file" hidden>&times;</button>
+        </span>
+      </div>
+      <span class="error" id="err-foto"></span>
+
+      <h2>Pendidikan</h2>
+
+      <label for="sekolah">Asal Sekolah</label>
+      <input type="text" id="sekolah" name="sekolah">
+      <span class="error" id="err-sekolah"></span>
+
+      <label for="prodi">Program Studi Pilihan</label>
+      <select id="prodi" name="prodi">
+        <option value="">-- Pilih program studi --</option>
+        <option>Teknik Informatika</option>
+        <option>Manajemen</option>
+        <option>Akuntansi</option>
+        <option>Pendidikan Bahasa Inggris</option>
+      </select>
+      <span class="error" id="err-prodi"></span>
+
+      <h2>Kontak</h2>
+
+      <label for="hp">Nomor HP</label>
+      <input type="tel" id="hp" name="hp" placeholder="081234567890">
+      <span class="error" id="err-hp"></span>
+
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email">
+      <span class="error" id="err-email"></span>
+
+      <h2>Saran dan Pertanyaan</h2>
+
+      <textarea id="pesan" name="pesan" rows="4" maxlength="200" placeholder="Tulis saran atau pertanyaan (boleh dikosongkan)"></textarea>
+      <small><span id="jumlah">0</span>/200 karakter</small>
+
+      <label class="setuju"><input type="checkbox" id="setuju"> Saya menyatakan data di atas sudah benar.</label>
+      <span class="error" id="err-setuju"></span>
+
+      <div class="aksi">
+        <button type="submit" class="tombol">Kirim</button>
+        <button type="reset" class="tombol putih" id="btnReset">Kosongkan</button>
+      </div>
+    </form>
+  </div>
+
+  <div class="kotak sukses" id="panelSukses" hidden>
+    <div class="centang">&#10003;</div>
+    <h2>Pendaftaran Berhasil</h2>
+    <p>Terima kasih, data Anda telah direkam.</p>
+    <p>Nomor pendaftaran: <b id="nomor"></b></p>
+    <div class="aksi tengah">
+      <a href="index.html" class="tombol">Kembali</a>
+    </div>
+  </div>
+
+  <div class="kotak" id="panelData" hidden>
+    <h2>Data yang Anda Isi</h2>
+    <table class="hasil" id="tabelHasil"></table>
+  </div>
+
+</div>
+
+<footer>&copy; <span id="tahun">2026</span> Universitas Zelani Indonesia</footer>
+
+<script src="formulir.js"></script>
+</body>
+</html>
+
