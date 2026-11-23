@@ -1,0 +1,204 @@
+var form = document.getElementById("formDaftar");
+var panelForm = document.getElementById("panelForm");
+var panelSukses = document.getElementById("panelSukses");
+var panelData = document.getElementById("panelData");
+var inputFoto = document.getElementById("foto");
+var chipFile = document.getElementById("chipFile");
+var belumFile = document.getElementById("belumFile");
+var linkFile = document.getElementById("linkFile");
+var tombolHapus = document.getElementById("hapusFoto");
+var pesan = document.getElementById("pesan");
+
+document.getElementById("tahun").textContent = new Date().getFullYear();
+
+function formatIso(d) {
+  return d.getFullYear() + "-" +
+    String(d.getMonth() + 1).padStart(2, "0") + "-" +
+    String(d.getDate()).padStart(2, "0");
+}
+
+var tanggalBatas = new Date();
+tanggalBatas.setFullYear(tanggalBatas.getFullYear() - 17);
+var batasIso = formatIso(tanggalBatas);
+
+form.tanggal.max = batasIso;          
+form.tanggal.min = "1900-01-01";
+document.getElementById("petunjukUsia").textContent =
+  "Usia minimal 17 tahun (lahir paling lambat " +
+  tanggalBatas.toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" }) + ").";
+
+
+var prodiUrl = new URLSearchParams(window.location.search).get("prodi");
+if (prodiUrl) form.prodi.value = prodiUrl;
+
+
+function ukuranFile(byte) {
+  return byte < 1024 * 1024
+    ? Math.round(byte / 1024) + " KB"
+    : (byte / 1024 / 1024).toFixed(1) + " MB";
+}
+
+function hapusFoto() {
+  if (linkFile.href && linkFile.href.indexOf("blob:") === 0) URL.revokeObjectURL(linkFile.href);
+  inputFoto.value = "";
+  linkFile.removeAttribute("href");
+  linkFile.textContent = "";
+  linkFile.hidden = true;
+  belumFile.hidden = false;
+  tombolHapus.hidden = true;
+  chipFile.classList.remove("ada");
+  document.getElementById("err-foto").textContent = "";
+}
+
+inputFoto.addEventListener("change", function () {
+  var file = inputFoto.files[0];
+  if (!file) { hapusFoto(); return; }
+
+  if (linkFile.href && linkFile.href.indexOf("blob:") === 0) URL.revokeObjectURL(linkFile.href);
+  linkFile.href = URL.createObjectURL(file);          // klik nama file untuk membuka foto
+  linkFile.textContent = file.name + " (" + ukuranFile(file.size) + ")";
+  linkFile.hidden = false;
+  belumFile.hidden = true;
+  tombolHapus.hidden = false;
+  chipFile.classList.add("ada");
+  document.getElementById("err-foto").textContent = "";
+});
+
+tombolHapus.addEventListener("click", hapusFoto);
+
+
+pesan.addEventListener("input", function () {
+  document.getElementById("jumlah").textContent = pesan.value.length;
+});
+
+
+function cekData() {
+  var salah = {};
+  var f = form;
+
+  if (f.nama.value.trim().length < 3) salah.nama = "Nama minimal 3 huruf.";
+  else if (!/^[A-Za-z .'-]+$/.test(f.nama.value.trim())) salah.nama = "Nama hanya boleh berisi huruf.";
+
+  if (f.tempat.value.trim() === "") salah.tempat = "Tempat lahir wajib diisi.";
+
+  if (f.tanggal.value === "") salah.tanggal = "Tanggal lahir wajib diisi.";
+  else if (f.tanggal.value > batasIso) salah.tanggal = "Usia minimal 17 tahun.";
+  else if (f.tanggal.value < "1900-01-01") salah.tanggal = "Tanggal lahir tidak valid.";
+
+  if (!f.jk.value) salah.jk = "Pilih jenis kelamin.";
+  if (f.alamat.value.trim().length < 10) salah.alamat = "Alamat minimal 10 karakter.";
+
+  var file = inputFoto.files[0];
+  if (file && file.size > 2 * 1024 * 1024) salah.foto = "Ukuran foto maksimal 2 MB. Klik tanda silang untuk membatalkan file.";
+
+  if (f.sekolah.value.trim() === "") salah.sekolah = "Asal sekolah wajib diisi.";
+  if (f.prodi.value === "") salah.prodi = "Pilih program studi.";
+
+  if (!/^08[0-9]{8,11}$/.test(f.hp.value.trim())) salah.hp = "Nomor HP tidak valid, contoh: 081234567890.";
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(f.email.value.trim())) salah.email = "Format email tidak valid.";
+  if (!document.getElementById("setuju").checked) salah.setuju = "Centang pernyataan terlebih dahulu.";
+
+  return salah;
+}
+
+function bersihkanError() {
+  document.querySelectorAll(".error").forEach(function (el) { el.textContent = ""; });
+}
+
+
+form.addEventListener("submit", function (e) {
+  e.preventDefault();
+  bersihkanError();
+
+  var salah = cekData();
+  var pertama = null;
+  for (var kolom in salah) {
+    var err = document.getElementById("err-" + kolom);
+    err.textContent = salah[kolom];
+    if (!pertama) pertama = err;
+  }
+  if (pertama) {
+    pertama.scrollIntoView({ behavior: "smooth", block: "center" });
+    return;
+  }
+
+  tampilkanHasil();
+});
+
+
+function tampilkanHasil() {
+  var tabel = document.getElementById("tabelHasil");
+  tabel.innerHTML = "";
+
+  var tgl = new Date(form.tanggal.value).toLocaleDateString("id-ID", {
+    day: "numeric", month: "long", year: "numeric", timeZone: "UTC"
+  });
+
+  var data = [
+    ["Nama Lengkap", form.nama.value.trim()],
+    ["Tempat, Tanggal Lahir", form.tempat.value.trim() + ", " + tgl],
+    ["Jenis Kelamin", form.jk.value],
+    ["Alamat", form.alamat.value.trim()],
+    ["Pas Foto", null],   
+    ["Asal Sekolah", form.sekolah.value.trim()],
+    ["Program Studi", form.prodi.value],
+    ["Nomor HP", form.hp.value.trim()],
+    ["Email", form.email.value.trim()],
+    ["Saran / Pertanyaan", form.pesan.value.trim() || "-"]
+  ];
+
+  data.forEach(function (baris) {
+    var tr = document.createElement("tr");
+    var td1 = document.createElement("td");
+    var td2 = document.createElement("td");
+    td1.textContent = baris[0];
+
+    if (baris[0] === "Pas Foto") {
+      if (inputFoto.files[0]) {
+        var a = document.createElement("a");
+        a.href = linkFile.href;
+        a.target = "_blank";
+        a.rel = "noopener";
+        a.textContent = inputFoto.files[0].name;
+        td2.appendChild(a);
+      } else {
+        td2.textContent = "-";
+      }
+    } else {
+      td2.textContent = baris[1];   
+    }
+
+    tr.appendChild(td1);
+    tr.appendChild(td2);
+    tabel.appendChild(tr);
+  });
+
+  
+  var nomor = document.getElementById("nomor");
+  if (!nomor.textContent) {
+    nomor.textContent = "ZLN-2026-" + Math.floor(10000 + Math.random() * 90000);
+  }
+
+  panelForm.hidden = true;
+  panelSukses.hidden = false;   
+  panelData.hidden = false;     
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+
+document.getElementById("btnUbah").addEventListener("click", function () {
+  panelSukses.hidden = true;
+  panelData.hidden = true;
+  panelForm.hidden = false;
+  window.scrollTo({ top: 0, behavior: "smooth" });
+});
+
+
+document.getElementById("btnReset").addEventListener("click", function () {
+  bersihkanError();
+  hapusFoto();
+  document.getElementById("nomor").textContent = "";
+  document.getElementById("jumlah").textContent = "0";
+});
+
+
